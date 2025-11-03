@@ -26,7 +26,7 @@ in
     enable = true;
     channel = "nightly";
     targets = [
-      "arm-unknown-linux-gnueabihf"
+      "armv7-unknown-linux-gnueabihf"
     ];
   };
 }

@@ -5,7 +5,7 @@ fn main() {
     // Only link against Miyoo-specific libraries when building for the ARM target used on device.
     // This avoids linking errors when running `cargo test` on x86_64 hosts/CI.
     let target = env::var("TARGET").unwrap_or_default();
-    if target.starts_with("arm-unknown-linux-gnueabihf") || target.starts_with("arm") {
+    if target == "armv7-unknown-linux-gnueabihf" {
         println!("cargo:rustc-link-search=native=third-party/my283/usr/lib");
         println!("cargo:rustc-link-lib=cam_os_wrapper");
         println!("cargo:rustc-link-lib=mi_sys");

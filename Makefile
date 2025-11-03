@@ -1,17 +1,17 @@
 ROOT_DIR := $(shell pwd)
-BUILD_DIR := target/arm-unknown-linux-gnueabihf/release
+BUILD_DIR := target/armv7-unknown-linux-gnueabihf/release
 DIST_DIR := dist
 RETROARCH := third-party/RetroArch-patch
 TOOLCHAIN := mholdg16/miyoomini-toolchain:latest
 
-CROSS_TARGET_TRIPLE := arm-unknown-linux-gnueabihf
+CROSS_TARGET_TRIPLE := armv7-unknown-linux-gnueabihf
 
 -include local.mk
 
 PLATFORM := $(shell uname -m)
 ifeq ($(PLATFORM),arm64)
   export CROSS_TARGET_ARM_UNKNOWN_LINUX_GNUEABIHF_IMAGE_TOOLCHAIN = aarch64-unknown-linux-gnu
-  export CROSS_TARGET_ARM_UNKNOWN_LINUX_GNUEABIHF_IMAGE = goweiwen/cross-with-clang_arm-unknown-linux-gnueabihf:aarch64
+  export CROSS_TARGET_ARM_UNKNOWN_LINUX_GNUEABIHF_IMAGE = goweiwen/cross-with-clang_armv7-unknown-linux-gnueabihf:aarch64
 endif
 
 .PHONY: all

@@ -32,7 +32,7 @@ fi
 
 source "$HOME/.cargo/env"
 
-rustup target add arm-unknown-linux-gnueabihf
+rustup target add armv7-unknown-linux-gnueabihf
 
 echo "---------------------------------------"
 echo "Installing cross for cross-compilation..."
