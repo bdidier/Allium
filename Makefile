@@ -108,6 +108,11 @@ $(DIST_DIR)/.allium/bin/dufs:
 	cd third-party/dufs && cargo zigbuild --release --target=$(TARGET_TRIPLE).$(GLIBC_VERSION)
 	cp "third-party/dufs/target/$(TARGET_TRIPLE)/release/dufs" "$(DIST_DIR)/.allium/bin/"
 
+COLLIE_URL := https://github.com/goweiwen/collie/releases/download/nightly/collie-miyoo-mini
+$(DIST_DIR)/.allium/bin/collie:
+	wget "$(COLLIE_URL)" -O "$(DIST_DIR)/.allium/bin/collie"
+	chmod +x "$(DIST_DIR)/.allium/bin/collie"
+
 SYNCTHING_VERSION := "v2.0.10"
 SYNCTHING_URL := "https://github.com/syncthing/syncthing/releases/download/$(SYNCTHING_VERSION)/syncthing-linux-arm-$(SYNCTHING_VERSION).tar.gz"
 $(DIST_DIR)/.allium/bin/syncthing:
