@@ -81,7 +81,7 @@ impl Sort for SearchResultsSort {
         match self {
             SearchResultsSort::Relevance(_) => {}
             SearchResultsSort::Alphabetical(_) => {
-                games.sort_by_key(|a| a.name.to_lowercase());
+                games.sort_by_cached_key(|a| a.name.to_lowercase());
             }
             SearchResultsSort::LastPlayed(_) => {
                 games.sort_by_key(|b| std::cmp::Reverse(b.last_played));

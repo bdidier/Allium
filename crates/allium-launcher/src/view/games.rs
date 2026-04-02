@@ -1,5 +1,6 @@
 use std::cmp::Reverse;
 use std::collections::VecDeque;
+use std::sync::Arc;
 
 use anyhow::Result;
 use async_trait::async_trait;
@@ -65,7 +66,7 @@ impl Games {
             EntryList::new(
                 rect,
                 res.clone(),
-                GamesSort::Alphabetical(Directory::new(ALLIUM_GAMES_DIR.clone())),
+                GamesSort::Alphabetical(Arc::new(Directory::new(ALLIUM_GAMES_DIR.clone()))),
             )?
         };
 
@@ -138,12 +139,12 @@ impl View for Games {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum GamesSort {
-    Alphabetical(Directory),
-    LastPlayed(Directory),
-    MostPlayed(Directory),
-    Rating(Directory),
-    ReleaseDate(Directory),
-    Random(Directory),
+    Alphabetical(Arc<Directory>),
+    LastPlayed(Arc<Directory>),
+    MostPlayed(Arc<Directory>),
+    Rating(Arc<Directory>),
+    ReleaseDate(Arc<Directory>),
+    Random(Arc<Directory>),
 }
 
 impl GamesSort {
@@ -173,23 +174,24 @@ impl Sort for GamesSort {
 
     fn next(&self) -> Self {
         match self {
-            GamesSort::Alphabetical(d) => GamesSort::LastPlayed(d.clone()),
-            GamesSort::LastPlayed(d) => GamesSort::MostPlayed(d.clone()),
-            GamesSort::MostPlayed(d) => GamesSort::Rating(d.clone()),
-            GamesSort::Rating(d) => GamesSort::ReleaseDate(d.clone()),
-            GamesSort::ReleaseDate(d) => GamesSort::Random(d.clone()),
-            GamesSort::Random(d) => GamesSort::Alphabetical(d.clone()),
+            GamesSort::Alphabetical(d) => GamesSort::LastPlayed(Arc::clone(d)),
+            GamesSort::LastPlayed(d) => GamesSort::MostPlayed(Arc::clone(d)),
+            GamesSort::MostPlayed(d) => GamesSort::Rating(Arc::clone(d)),
+            GamesSort::Rating(d) => GamesSort::ReleaseDate(Arc::clone(d)),
+            GamesSort::ReleaseDate(d) => GamesSort::Random(Arc::clone(d)),
+            GamesSort::Random(d) => GamesSort::Alphabetical(Arc::clone(d)),
         }
     }
 
     fn with_directory(&self, directory: Directory) -> Self {
+        let dir = Arc::new(directory);
         match self {
-            GamesSort::Alphabetical(_) => GamesSort::Alphabetical(directory),
-            GamesSort::LastPlayed(_) => GamesSort::LastPlayed(directory),
-            GamesSort::MostPlayed(_) => GamesSort::MostPlayed(directory),
-            GamesSort::Rating(_) => GamesSort::Rating(directory),
-            GamesSort::ReleaseDate(_) => GamesSort::ReleaseDate(directory),
-            GamesSort::Random(_) => GamesSort::Random(directory),
+            GamesSort::Alphabetical(_) => GamesSort::Alphabetical(dir),
+            GamesSort::LastPlayed(_) => GamesSort::LastPlayed(dir),
+            GamesSort::MostPlayed(_) => GamesSort::MostPlayed(dir),
+            GamesSort::Rating(_) => GamesSort::Rating(dir),
+            GamesSort::ReleaseDate(_) => GamesSort::ReleaseDate(dir),
+            GamesSort::Random(_) => GamesSort::Random(dir),
         }
     }
 

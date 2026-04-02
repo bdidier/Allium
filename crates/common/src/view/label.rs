@@ -138,15 +138,14 @@ where
                     .skip(scrolling.offset)
                     .collect::<String>();
 
-                let mut truncated = scroll_text.clone();
-                while text_style.measure(&truncated).w > width && !truncated.is_empty() {
-                    let mut n = truncated.len() - 1;
-                    while !truncated.is_char_boundary(n) {
+                let mut n = scroll_text.len();
+                while n > 0 && text_style.measure(&scroll_text[..n]).w > width {
+                    n -= 1;
+                    while n > 0 && !scroll_text.is_char_boundary(n) {
                         n -= 1;
                     }
-                    truncated = truncated[..n].to_string();
                 }
-                self.truncated_text = Some(truncated.trim_end().to_string());
+                self.truncated_text = Some(scroll_text[..n].trim_end().to_string());
             } else {
                 let ellipsis_width = text_style.measure("...").w;
 
@@ -155,19 +154,19 @@ where
                 let text_str = self.text.as_ref();
 
                 if text_width > width {
-                    let mut current = text_str.to_string();
-                    while text_style.measure(&current).w + ellipsis_width > width
-                        && !current.is_empty()
+                    let mut n = text_str.len();
+                    while n > 0
+                        && text_style.measure(&text_str[..n]).w + ellipsis_width > width
                     {
-                        let mut n = current.len() - 1;
-                        while !current.is_char_boundary(n) {
+                        n -= 1;
+                        while n > 0 && !text_str.is_char_boundary(n) {
                             n -= 1;
                         }
-                        current = current[..n].to_string();
                         truncated = true;
                     }
                     if truncated {
-                        self.truncated_text = Some(format!("{}...", current.trim_end()));
+                        self.truncated_text =
+                            Some(format!("{}...", text_str[..n].trim_end()));
                     } else {
                         self.truncated_text = Some(text_str.to_string());
                     }
