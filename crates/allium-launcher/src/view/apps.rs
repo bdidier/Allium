@@ -1,5 +1,4 @@
 use std::collections::VecDeque;
-use std::sync::Arc;
 
 use anyhow::Result;
 use async_trait::async_trait;
@@ -44,7 +43,7 @@ impl Apps {
             EntryList::new(
                 rect,
                 res.clone(),
-                AppsSort::Alphabetical(Arc::new(Directory::new(ALLIUM_APPS_DIR.clone()))),
+                AppsSort::Alphabetical(Directory::new(ALLIUM_APPS_DIR.clone())),
             )?
         };
 
@@ -106,7 +105,7 @@ impl View for Apps {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum AppsSort {
-    Alphabetical(Arc<Directory>),
+    Alphabetical(Directory),
 }
 
 impl AppsSort {
@@ -128,13 +127,13 @@ impl Sort for AppsSort {
 
     fn next(&self) -> Self {
         match self {
-            AppsSort::Alphabetical(d) => AppsSort::Alphabetical(Arc::clone(d)),
+            AppsSort::Alphabetical(d) => AppsSort::Alphabetical(d.clone()),
         }
     }
 
     fn with_directory(&self, directory: Directory) -> Self {
         match self {
-            AppsSort::Alphabetical(_) => AppsSort::Alphabetical(Arc::new(directory)),
+            AppsSort::Alphabetical(_) => AppsSort::Alphabetical(directory),
         }
     }
 
