@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 use std::collections::VecDeque;
 use std::path::PathBuf;
+use std::sync::{Arc, Mutex};
 
 use anyhow::Result;
 use async_trait::async_trait;
@@ -16,14 +17,33 @@ use crate::platform::{DefaultPlatform, Key, KeyEvent, Platform};
 use crate::stylesheet::{Stylesheet, Theme};
 use crate::view::{Command, View};
 
+/// Global cache of button icon images keyed by theme name.
+/// Shared via `Arc` so all `ButtonIcon` instances with the same theme
+/// hold a reference to the same allocation instead of each owning a
+/// separate copy of up to 19 `RgbaImage` values.
+static ICONS_CACHE: Mutex<Option<(String, Arc<HashMap<Key, RgbaImage>>)>> = Mutex::new(None);
+
 #[derive(Debug, Clone)]
 struct ButtonIcons {
-    images: HashMap<Key, RgbaImage>,
+    images: Arc<HashMap<Key, RgbaImage>>,
 }
 
 impl ButtonIcons {
     fn load() -> Self {
         let theme = Theme::load();
+
+        // Fast path: return the cached images if the theme hasn't changed.
+        {
+            let cache = ICONS_CACHE.lock().unwrap();
+            if let Some((ref cached_theme, ref images)) = *cache {
+                if cached_theme == &theme.0 {
+                    return ButtonIcons {
+                        images: Arc::clone(images),
+                    };
+                }
+            }
+        }
+
         let theme_dir = ALLIUM_THEMES_DIR.join(&theme.0);
 
         let resolve_icon_path = |icon_name: &str| -> PathBuf {
@@ -82,6 +102,11 @@ impl ButtonIcons {
                 }
             }
         }
+
+        let images = Arc::new(images);
+
+        // Store the freshly loaded images in the global cache.
+        *ICONS_CACHE.lock().unwrap() = Some((theme.0, Arc::clone(&images)));
 
         ButtonIcons { images }
     }

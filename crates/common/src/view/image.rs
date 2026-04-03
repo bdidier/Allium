@@ -85,11 +85,11 @@ impl Image {
         self
     }
 
-    fn resize_image(src_image: &RgbaImage, new_width: u32, new_height: u32) -> Option<RgbaImage> {
+    fn resize_image(src_image: RgbaImage, new_width: u32, new_height: u32) -> Option<RgbaImage> {
         let src = FirImage::from_vec_u8(
             src_image.width(),
             src_image.height(),
-            src_image.as_raw().clone(),
+            src_image.into_raw(),
             PixelType::U8x4,
         )
         .ok()?;
@@ -126,8 +126,7 @@ impl Image {
                 if image.width() == rect.w && image.height() == rect.h {
                     image.to_rgba8()
                 } else {
-                    let rgba = image.to_rgba8();
-                    Self::resize_image(&rgba, rect.w, rect.h)?
+                    Self::resize_image(image.to_rgba8(), rect.w, rect.h)?
                 }
             }
             ImageMode::Contain => {
@@ -136,8 +135,7 @@ impl Image {
                 } else {
                     let new_height = rect.h.min(rect.w * image.height() / image.width());
                     let new_width = rect.w.min(rect.h * image.width() / image.height());
-                    let rgba = image.to_rgba8();
-                    Self::resize_image(&rgba, new_width, new_height)?
+                    Self::resize_image(image.to_rgba8(), new_width, new_height)?
                 }
             }
         };

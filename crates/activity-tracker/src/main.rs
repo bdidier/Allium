@@ -8,7 +8,7 @@ use simple_logger::SimpleLogger;
 
 use crate::activity_tracker::ActivityTracker;
 
-#[tokio::main]
+#[tokio::main(flavor = "current_thread")]
 async fn main() -> Result<()> {
     SimpleLogger::new().env().init().unwrap();
 

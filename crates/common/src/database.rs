@@ -71,6 +71,9 @@ impl Database {
         let mut conn = Connection::open(ALLIUM_DATABASE.as_path())
             .with_context(|| format!("{}", ALLIUM_DATABASE.display()))?;
         Self::migrations().to_latest(&mut conn)?;
+        // Limit the SQLite page cache to ~512 KB (default is ~8 MB).
+        // A negative value is interpreted as a kilobyte limit by SQLite.
+        conn.execute_batch("PRAGMA cache_size = -512;")?;
         Ok(Self {
             conn: Some(Rc::new(conn)),
         })

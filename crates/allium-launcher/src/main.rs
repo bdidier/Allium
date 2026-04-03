@@ -13,7 +13,7 @@ use allium_launcher::AlliumLauncher;
 use common::platform::{DefaultPlatform, Platform};
 use simple_logger::SimpleLogger;
 
-#[tokio::main]
+#[tokio::main(flavor = "current_thread")]
 async fn main() -> Result<()> {
     SimpleLogger::new().env().init().unwrap();
 
