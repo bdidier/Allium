@@ -6,7 +6,7 @@ use common::platform::{DefaultPlatform, Platform};
 use screenshot_viewer::ScreenshotViewer;
 use simple_logger::SimpleLogger;
 
-#[tokio::main]
+#[tokio::main(flavor = "current_thread")]
 async fn main() -> Result<()> {
     SimpleLogger::new().env().init().unwrap();
     let platform = DefaultPlatform::new()?;
